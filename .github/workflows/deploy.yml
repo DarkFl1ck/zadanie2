@@ -22,5 +22,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
+            echo '${{ secrets.K8S_KEY }}' > ~/k8s_key.json
+            export KUBECONFIG=~/k8s_key.json
             kubectl apply -f ~/k8s/deployment.yaml --validate=false
             kubectl apply -f ~/k8s/service.yaml --validate=false
