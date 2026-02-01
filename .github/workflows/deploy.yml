@@ -22,7 +22,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
+            rm -f ~/k8s_key.json
             echo '${{ secrets.K8S_KEY }}' > ~/k8s_key.json
+            chmod 600 ~/k8s_key.json
             export KUBECONFIG=~/k8s_key.json
             kubectl apply -f ~/k8s/deployment.yaml --validate=false
             kubectl apply -f ~/k8s/service.yaml --validate=false
+            
+            # 6. Sprawdzenie czy się udało
+            kubectl get pods
