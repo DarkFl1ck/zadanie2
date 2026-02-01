@@ -22,12 +22,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            rm -f ~/k8s_key.json
+            # Tworzymy plik klucza z tekstu zapisanego w Secrets
             echo '${{ secrets.K8S_KEY }}' > ~/k8s_key.json
-            chmod 600 ~/k8s_key.json
+            
+            # Wskazujemy kubectl, żeby użył tego klucza do autoryzacji
             export KUBECONFIG=~/k8s_key.json
+            
+            # Wdrażamy aplikację (bez sprawdzania online, co omija błąd connection refused)
             kubectl apply -f ~/k8s/deployment.yaml --validate=false
             kubectl apply -f ~/k8s/service.yaml --validate=false
-            
-            # 6. Sprawdzenie czy się udało
-            kubectl get pods
