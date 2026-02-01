@@ -1,17 +1,11 @@
 name: Deploy to Kubernetes
-
-on:
-  push:
-    branches: [ main ]
-
+on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Copy files to Server
+      - uses: actions/checkout@v3
+      - name: Copy to Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -20,8 +14,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           source: "k8s/*"
           target: "~/"
-
-      - name: Execute Deployment
+      - name: Deploy on K8s
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -29,6 +22,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            kubectl apply f ~/k8s/deployment.yaml
+            kubectl apply -f ~/k8s/deployment.yaml
             kubectl apply -f ~/k8s/service.yaml
-            kubectl rollout restart deployment/uwb-app-deployment
